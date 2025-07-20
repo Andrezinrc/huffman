@@ -89,6 +89,9 @@ int main(int argc, char* argv[]) {
         compressSingleFileToStream(file, file, out);
         fclose(out);
         printf("Arquivo compactado como %s\n", outputPath);
+
+        // exibe os tamanhos antes e depois da compressão e mostra a economia obtido
+        showFileSizeComparison(file, outputPath);
     } 
     else if (strcmp(mode, "decompress") == 0) {
         FILE* in = fopen(file, "rb");

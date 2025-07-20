@@ -45,4 +45,7 @@ void compressSingleFileToStream(const char* filePath, const char* relativePath, 
 // Lê e descompacta um arquivo codificado com Huffman do arquivo .adr
 void decompressSingleFileFromStream(FILE* input);
 
+// Exibe o tamanho original e comprimido de dois arquivos e calcula a economia percentual
+void showFileSizeComparison(const char* originalPath, const char* compressedPath);
+
 #endif

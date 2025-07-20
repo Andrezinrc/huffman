@@ -274,3 +274,30 @@ void decompressSingleFileFromStream(FILE* input) {
     fclose(output);
     freeTree(root);
 }
+
+void showFileSizeComparison(const char* originalPath, const char* compressedPath) {
+    FILE* f1 = fopen(originalPath, "rb");
+    FILE* f2 = fopen(compressedPath, "rb");
+
+    if (!f1 || !f2) {
+        printf("Erro ao abrir os arquivos para comparação de tamanho.\n");
+        if (f1) fclose(f1);
+        if (f2) fclose(f2);
+        return;
+    }
+
+    fseek(f1, 0, SEEK_END);
+    fseek(f2, 0, SEEK_END);
+
+    long size1 = ftell(f1);
+    long size2 = ftell(f2);
+
+    fclose(f1);
+    fclose(f2);
+
+    double percent = 100.0 * (1.0 - (double)size2 / size1);
+
+    printf("Tamanho original: %.2f KB\n", size1 / 1024.0);
+    printf("Tamanho comprimido: %.2f KB\n", size2 / 1024.0);
+    printf("Economia: %.2f%%\n", percent);
+}
