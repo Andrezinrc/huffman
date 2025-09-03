@@ -52,7 +52,7 @@ int compareNode(const void* a, const void* b){
     Node *nodeA = *(Node**)a; // converte o ponteiro genérico para ponteiro de Node
     Node *nodeB = *(Node**)b; // idem
 
-    return nodeA->frequency - nodeB->frequency; // // ordena pela frequência
+    return nodeA->frequency - nodeB->frequency; // ordena pela frequência
 }
 
 int generateNodeList(int* frequency, Node* nodeList[]){
@@ -106,13 +106,7 @@ void generateCodes(Node* root, char* path, int depth, char* codes[256]){
 
     // se for folha, salva o codigo
     if(!root->left && !root->right){
-        if(depth == 0) {
-            // arvore com só um nó, código "0"
-            path[depth] = '0';
-            path[depth + 1] = '\0';
-        } else {
-            path[depth] = '\0';
-        }
+        path[depth] = '\0'; // marca o fim da string
         codes[root->character] = strdup(path); // salva copia do codigo
         return;
     }
@@ -174,8 +168,22 @@ void compressSingleFileToStream(const char* filePath, const char* relativePath, 
     uint32_t fileSize32 = (uint32_t)fileSize;
     fwrite(&fileSize32, sizeof(uint32_t), 1, output);
 
-    // escreve tabela de frequência
-    fwrite(freq, sizeof(int), 256, output);
+    // Escreve apenas símbolos usados
+    uint16_t unique_count = 0;
+    for (int i = 0; i < 256; i++) {
+        if (freq[i] > 0) unique_count++;
+    }
+    fwrite(&unique_count, sizeof(uint16_t), 1, output);
+    
+    // escreve apenas os símbolos que aparecem
+    for (int i = 0; i < 256; i++) {
+        if (freq[i] > 0) {
+            uint8_t symbol = (uint8_t)i;
+            uint32_t frequency = (uint32_t)freq[i];
+            fwrite(&symbol, 1, 1, output);
+            fwrite(&frequency, sizeof(uint32_t), 1, output);
+        }
+    }
 
     unsigned char buffer = 0;
     int bitCount = 0;
@@ -234,9 +242,18 @@ void decompressSingleFileFromStream(FILE* input) {
     uint32_t originalSize;
     fread(&originalSize, sizeof(uint32_t), 1, input);
 
-    // lê a tabela de frequência
-    int freq[256];
-    fread(freq, sizeof(int), 256, input);
+    // lê a tabela de frequência compactada
+    uint16_t unique_count;
+    fread(&unique_count, sizeof(uint16_t), 1, input);
+    
+    int freq[256] = {0}; // inicializa com zeros
+    for (int i = 0; i < unique_count; i++) {
+        uint8_t symbol;
+        uint32_t frequency;
+        fread(&symbol, 1, 1, input);
+        fread(&frequency, sizeof(uint32_t), 1, input);
+        freq[symbol] = (int)frequency;
+    }
 
     // reconstrói a árvore de Huffman
     Node* nodeList[256];
