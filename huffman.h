@@ -21,7 +21,20 @@ int* countFrequency(const unsigned char* text, size_t length);
 HuffmanNode* createNode(unsigned char byte, int freq,
                         HuffmanNode* left, HuffmanNode* right);
 
-// Encontra o índice do nó com menor frequência
+/*
+ * Encontra o índice do nó com menor frequência
+ */
 int findMinNode(HuffmanNode** nodes, int count);
+
+/*
+ * Constrói a árvore de Huffman e retorna a raiz
+ */
+HuffmanNode* buildHuffmanTree(int* frequencies);
+
+/*
+ * Imprime a árvore de Huffman de forma recursiva
+ * para visualização. depth indica a profundidade atual.
+ */
+void printTree(HuffmanNode* root, int depth);
 
 #endif

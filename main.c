@@ -7,6 +7,8 @@ int main(){
     const unsigned char* text = "aaaaaabbbbbbccccc";
     int* f = countFrequency(text, strlen((const char*)text));
     
+    HuffmanNode* root = buildHuffmanTree(f);
+    
     int count=0;
     for(int i=0;i<256;i++){
         if(f[i]>0) count++;
@@ -22,6 +24,7 @@ int main(){
     printf("Node criado: byte=%c freq=%d\n", n->byte, n->freq);
            nodes[idx++] = n;
             
+            // printTree(root, 0);
             /*printf("byte: %3d (%c) aparece %d vezes\n", i,
             (i >= 32 && i<=126) ? i : '.' ,f[i]);
             */
@@ -34,10 +37,6 @@ int main(){
        nodes[m]->byte);
     
     free(f);
+    free(nodes);
     return 0;
 }
-
-
-
-
-
