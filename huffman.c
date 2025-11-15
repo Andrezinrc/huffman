@@ -12,5 +12,14 @@ int* countFrequency(const unsigned char* text, size_t length){
     return f;
 }
 
+HuffmanNode* createNode(unsigned char byte, int freq, HuffmanNode* left, HuffmanNode* right){
+    HuffmanNode* n = malloc(sizeof(HuffmanNode));
+    n->byte=byte;
+    n->freq=freq;
+    n->left=left;
+    n->right=right;
+    return n;
+}
+
 
 

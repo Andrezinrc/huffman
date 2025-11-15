@@ -9,8 +9,14 @@ int main(){
     
     for(int i=0;i<256;i++){
         if(f[i]>0){
-            printf("byte: %3d (%c) aparece %d vezes\n", i,
+            
+            
+            HuffmanNode* n = createNode(i,f[i],NULL,NULL);
+    printf("Node criado: byte=%c freq=%d\n", n->byte, n->freq);
+            
+            /*printf("byte: %3d (%c) aparece %d vezes\n", i,
             (i >= 32 && i<=126) ? i : '.' ,f[i]);
+            */
         }
     }
     free(f);
