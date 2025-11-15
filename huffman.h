@@ -21,4 +21,7 @@ int* countFrequency(const unsigned char* text, size_t length);
 HuffmanNode* createNode(unsigned char byte, int freq,
                         HuffmanNode* left, HuffmanNode* right);
 
+// Encontra o índice do nó com menor frequência
+int findMinNode(HuffmanNode** nodes, int count);
+
 #endif

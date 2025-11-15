@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
 #include "huffman.h"
 
 int* countFrequency(const unsigned char* text, size_t length){
@@ -19,6 +19,16 @@ HuffmanNode* createNode(unsigned char byte, int freq, HuffmanNode* left, Huffman
     n->left=left;
     n->right=right;
     return n;
+}
+
+int findMinNode(HuffmanNode** nodes, int count){
+    int minIndex = -1;
+    for(int i=0;i<count;i++){
+        if(nodes[i]!=NULL && (minIndex == -1 || nodes[i]->freq < nodes[minIndex]->freq)){
+            minIndex = i;
+        }
+    }
+    return minIndex;
 }
 
 
