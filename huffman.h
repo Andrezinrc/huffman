@@ -66,4 +66,9 @@ int calculateEncodedSize(const unsigned char* text, int length, HuffmanCode* tab
 unsigned char* encode(const unsigned char* text, size_t length,
                       HuffmanCode* table, int* outSizeBytes);
 
+/**
+ * Reconstrói o texto original percorrendo os bits comprimidos.
+ */
+unsigned char* decode(const unsigned char* data, int bitCount, HuffmanNode* root, int originalSize);
+
 #endif

@@ -144,6 +144,35 @@ unsigned char* encode(const unsigned char* text, size_t length,
     return out;
 }
 
+unsigned char* decode(const unsigned char* data, int bitCount, HuffmanNode* root, int originalSize){
+    unsigned char* out = malloc(originalSize);
+    int outPos=0;
 
+    HuffmanNode* cur = root;
+
+    for (int bitPos=0;bitPos<bitCount;bitPos++) {
+
+        int byteIdx=bitPos / 8;
+        int bitInByte = 7 -(bitPos % 8);
+
+        int bit = (data[byteIdx] >> bitInByte) & 1;
+
+        // Anda na árvore
+        if (bit==0)
+            cur=cur->left;
+        else
+            cur=cur->right;
+
+        // Chegou na folha -> escreve char
+        if (!cur->left && !cur->right) {
+            out[outPos++] = cur->byte;
+            cur=root; // Volta para raiz
+            if (outPos == originalSize)
+                break;
+        }
+    }
+
+    return out;
+}
 
 
