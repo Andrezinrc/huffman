@@ -57,4 +57,13 @@ void buildCodeTable(HuffmanNode* root, HuffmanCode* table);
  */
 int calculateEncodedSize(const unsigned char* text, int length, HuffmanCode* table);
 
+/*
+ * Codifica um texto usando a tabela de Huffman.
+ * Recebe o texto original, seu tamanho e a tabela de códigos.
+ * Retorna um buffer com os bits comprimidos e preenche outSizeBytes
+ * com o tamanho em bytes do buffer gerado.
+ */
+unsigned char* encode(const unsigned char* text, size_t length,
+                      HuffmanCode* table, int* outSizeBytes);
+
 #endif

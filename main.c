@@ -4,13 +4,28 @@
 #include "huffman.h"
 
 int main(){
-    const unsigned char* text = "aaaaaabbbbbbccccc";
-    int* f = countFrequency(text, strlen((const char*)text));
+    const unsigned char* text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbc";
+    
+    size_t len = strlen((const char*)text);
+    int* f = countFrequency(text,len);
     
     HuffmanNode* root = buildHuffmanTree(f);
     HuffmanCode table[256];
     buildCodeTable(root,table);
     
+    int outSize=0;
+    unsigned char* compressed = encode(text,len,table,&outSize);
+    
+    printf("Tamanho original: %zu bytes\n", len);
+    printf("Tamanho comprimido: %d bytes\n", outSize);
+
+    printf("\nBytes comprimidos:\n");
+    for (int i=0;i<outSize;i++)
+        printf("%02X ", compressed[i]);
+
+    printf("\n");
+    
+    /* TESTE
     for(int i=0;i<256;i++){
         if(table[i].length>0){
             printf("'%c' (byte %d) = ", (i>=32 && i<=126) ? i : '.', i);
@@ -27,7 +42,6 @@ int main(){
     printf("Total de bits necessários: %d\n", totalBits);
     printf("Tamanho estimado: %d bytes\n", (totalBits+7)/8);
     
-    /* TESTE 
     int count=0;
     for(int i=0;i<256;i++){
         if(f[i]>0) count++;
@@ -59,7 +73,6 @@ int main(){
     // free(nodes);
     return 0;
 }
-
 
 
 

@@ -119,6 +119,31 @@ int calculateEncodedSize(const unsigned char* text, int length, HuffmanCode* tab
     return totalBits;
 }
 
+unsigned char* encode(const unsigned char* text, size_t length,
+                      HuffmanCode* table, int* outSizeBytes){
+    int totalBits = calculateEncodedSize(text,length,table);
+    int totalBytes = (totalBits + 7)/8;  // Arredonda pra cima
+
+    unsigned char* out = calloc(totalBytes, 1);
+
+    int bitPos=0;  // Posiçao global no fluxo de bits
+
+    for (size_t i=0;i<length;i++) {
+        unsigned char c=text[i];
+        HuffmanCode code=table[c];
+        for (int b=0;b<code.length;b++) {
+            int byteIdx = bitPos / 8;
+            int bitInByte = 7 -(bitPos % 8);
+            if (code.bits[b]==1)
+                out[byteIdx] |= (1 << bitInByte);
+            bitPos++;
+        }
+    }
+
+    *outSizeBytes=totalBytes;
+    return out;
+}
+
 
 
 
