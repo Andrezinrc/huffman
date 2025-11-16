@@ -8,7 +8,20 @@ int main(){
     int* f = countFrequency(text, strlen((const char*)text));
     
     HuffmanNode* root = buildHuffmanTree(f);
+    HuffmanCode table[256];
+    buildCodeTable(root,table);
     
+    for(int i=0;i<256;i++){
+        if(table[i].length > 0){
+            printf("%c = ", i);
+            for(int j=0;j<table[i].length;j++){
+                printf("%d", table[i].bits[j]);
+            }
+        printf("\n");
+        }
+    }
+    
+    /* TESTE 
     int count=0;
     for(int i=0;i<256;i++){
         if(f[i]>0) count++;
@@ -25,9 +38,8 @@ int main(){
            nodes[idx++] = n;
             
             // printTree(root, 0);
-            /*printf("byte: %3d (%c) aparece %d vezes\n", i,
+            printf("byte: %3d (%c) aparece %d vezes\n", i,
             (i >= 32 && i<=126) ? i : '.' ,f[i]);
-            */
         }
     }
     
@@ -35,8 +47,14 @@ int main(){
     printf("Menor freq = %d (byte = %c)\n",
        nodes[m]->freq,
        nodes[m]->byte);
+    */
     
     free(f);
-    free(nodes);
+    // free(nodes);
     return 0;
 }
+
+
+
+
+

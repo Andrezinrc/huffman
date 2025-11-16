@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include "huffman.h"
 
 int* countFrequency(const unsigned char* text, size_t length){
@@ -31,8 +31,7 @@ int findMinNode(HuffmanNode** nodes, int count){
     return minIndex;
 }
 
-HuffmanNode* buildHuffmanTree(int*  frequencies){
-    
+HuffmanNode* buildHuffmanTree(int* frequencies){
     HuffmanNode* nodes[256];
     int nNodes=0;
     
@@ -45,21 +44,18 @@ HuffmanNode* buildHuffmanTree(int*  frequencies){
     
     // Combinar nós até sobrar apenas a raiz
     while(nNodes>1){
-        // Encontra dois nós de menos frequencia
-        int i = findMinNode(nodes, nNodes);
+        // Encontra dois nós de menor frequencia
+        int i=findMinNode(nodes, nNodes);
         HuffmanNode* min1=nodes[i];
-        nodes[i]=NULL;
+        nodes[i]=nodes[--nNodes];
         
-        int j = findMinNode(nodes, nNodes);
+        int j=findMinNode(nodes, nNodes);
         HuffmanNode* min2=nodes[j];
+        nodes[j]=nodes[--nNodes];
         
-        // Cria Nó pai
-        HuffmanNode* parent = createNode(0,min1->freq + min2->freq, min1,min2);
-        nodes[i]=parent;
-        if(j != nNodes-1){
-            nodes[j]=nodes[nNodes-1]; // Move o ultimo nó para a posição de j
-        }
-        nNodes--;
+        // Cria nó pai
+        HuffmanNode* parent = createNode(0, min1->freq + min2->freq, min1, min2);
+        nodes[nNodes++]=parent;
     }
     
     return nodes[0];
@@ -77,6 +73,42 @@ void printTree(HuffmanNode* n, int depth) {
     printTree(n->right, depth+1);
 }
 */
+
+void generateCodes(HuffmanNode* n, HuffmanCode* table, unsigned char* path, int depth)
+{
+    if (!n) return;
+
+    // Se é folha -> salva o código
+    if (!n->left && !n->right) {
+        table[n->byte].length = depth;
+        for (int i=0;i<depth;i++) {
+            table[n->byte].bits[i] = path[i];
+        }
+        return;
+    }
+
+    if(n->left){
+        // Vai para a esquerda (0)
+       path[depth]=0;
+       generateCodes(n->left, table, path, depth + 1);
+    }
+    if(n->right){
+        // Vai para a direita (1)
+       path[depth]=1;
+       generateCodes(n->right, table, path, depth + 1);
+    }
+}
+
+void buildCodeTable(HuffmanNode* root, HuffmanCode* table){
+    unsigned char path[256];
+
+    // Zera a tabela
+    for (int i=0;i<256;i++)
+        table[i].length=0;
+
+    generateCodes(root,table,path,0);
+}
+
 
 
 

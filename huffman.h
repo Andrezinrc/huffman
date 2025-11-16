@@ -10,6 +10,11 @@ typedef struct HuffmanNode {
     struct HuffmanNode* right;
 } HuffmanNode;
 
+typedef struct {
+    unsigned char bits[256];  // sequência de bits, armazenada como 0 ou 1
+    int length;               // quantidade de bits válidos
+} HuffmanCode;
+
 /*
  * Conta a frequência de cada byte.
  */
@@ -36,5 +41,15 @@ HuffmanNode* buildHuffmanTree(int* frequencies);
  * para visualização. depth indica a profundidade atual.
  */
 void printTree(HuffmanNode* root, int depth);
+
+/*
+ * Gera os códigos de Huffman percorrendo a árvore.
+ */
+void generateCodes(HuffmanNode* n, HuffmanCode* table, unsigned char* path, int depth);
+
+/*
+ * Preenche a tabela de códigos de Huffman a partir da raiz.
+ */
+void buildCodeTable(HuffmanNode* root, HuffmanCode* table);
 
 #endif
