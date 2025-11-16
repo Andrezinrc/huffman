@@ -109,6 +109,16 @@ void buildCodeTable(HuffmanNode* root, HuffmanCode* table){
     generateCodes(root,table,path,0);
 }
 
+int calculateEncodedSize(const unsigned char* text, int length, HuffmanCode* table){
+    int totalBits=0;
+    
+    for(size_t i=0;i<length;i++){
+        unsigned char c=text[i];
+        totalBits+=table[c].length;
+    }
+    return totalBits;
+}
+
 
 
 

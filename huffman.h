@@ -52,4 +52,9 @@ void generateCodes(HuffmanNode* n, HuffmanCode* table, unsigned char* path, int 
  */
 void buildCodeTable(HuffmanNode* root, HuffmanCode* table);
 
+/*
+ * Calcula quantos bits serão necessários para codificar o texto.
+ */
+int calculateEncodedSize(const unsigned char* text, int length, HuffmanCode* table);
+
 #endif

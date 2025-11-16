@@ -12,14 +12,20 @@ int main(){
     buildCodeTable(root,table);
     
     for(int i=0;i<256;i++){
-        if(table[i].length > 0){
-            printf("%c = ", i);
+        if(table[i].length>0){
+            printf("'%c' (byte %d) = ", (i>=32 && i<=126) ? i : '.', i);
             for(int j=0;j<table[i].length;j++){
                 printf("%d", table[i].bits[j]);
             }
-        printf("\n");
+            printf("\n");
         }
     }
+    
+    
+    
+    int totalBits = calculateEncodedSize(text, strlen((const char*)text),table);
+    printf("Total de bits necessários: %d\n", totalBits);
+    printf("Tamanho estimado: %d bytes\n", (totalBits+7)/8);
     
     /* TESTE 
     int count=0;
