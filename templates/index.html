@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Huffman Compressor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">    
+</head>
+<body>
+    <div class="container">
+        <h2>Huffman Compressor</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" required><br><br>
+
+            <div class="button-group">
+                <button name="action" value="compress" class="btn-compress">Comprimir</button>
+                <button name="action" value="decompress" class="btn-decompress">Descomprimir</button>
+            </div>
+        </form>
+
+        {% if result %}
+            <p class="result">{{ result }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

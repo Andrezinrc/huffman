@@ -71,4 +71,10 @@ unsigned char* encode(const unsigned char* text, size_t length,
  */
 unsigned char* decode(const unsigned char* data, int bitCount, HuffmanNode* root, int originalSize);
 
+// Compacta um arquivo comum e salva no formato .adr
+int compressToFile(const char* inputPath, const char* outputAdrPath);
+
+// Descompacta um arquivo .adr e recria o arquivo original
+int decompressFromFile(const char* adrPath, const char* outputPath);
+
 #endif

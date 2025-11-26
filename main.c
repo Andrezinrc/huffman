@@ -3,83 +3,39 @@
 #include <string.h>
 #include "huffman.h"
 
-int main(){
-    const unsigned char* text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbc";
-    
-    size_t len = strlen((const char*)text);
-    int* f = countFrequency(text,len);
-    
-    HuffmanNode* root = buildHuffmanTree(f);
-    HuffmanCode table[256];
-    buildCodeTable(root,table);
-    
-    // TESTE ENCODE
-    int outSize=0;
-    unsigned char* compressed = encode(text,len,table,&outSize);
-    
-    printf("Tamanho original: %zu bytes\n", len);
-    printf("Tamanho comprimido: %d bytes\n", outSize);
+int main(int argc, char* argv[]){
+    // ./huffman compress in out
+    // ./huffman decompress in out
+    if (argc<4) {
+        printf("Uso:\n");
+        printf("  %s compress <arquivo_entrada> <arquivo_saida.adr>\n", argv[0]);
+        printf("  %s decompress <arquivo.adr> <arquivo_saida>\n", argv[0]);
+        return 1;
+    }
 
-    printf("\nBytes comprimidos:\n");
-    for (int i=0;i<outSize;i++)
-        printf("0x%02X ", compressed[i]);
-    printf("\n");
-    
-    // TESTE DECODE
-    int bitCount = calculateEncodedSize(text, len, table);
+    const char* mode = argv[1];
+    const char* input = argv[2];
+    const char* output = argv[3];
 
-    unsigned char* restored = decode(compressed, bitCount, root, len);
-
-    printf("\nTexto descomprimido:\n%s\n", restored);
-
-
-    /* TESTE
-    for(int i=0;i<256;i++){
-        if(table[i].length>0){
-            printf("'%c' (byte %d) = ", (i>=32 && i<=126) ? i : '.', i);
-            for(int j=0;j<table[i].length;j++){
-                printf("%d", table[i].bits[j]);
-            }
-            printf("\n");
+    if (strcmp(mode, "compress")==0) {
+        if (compressToFile(input, output)) {
+            printf("Arquivo '%s' compactado para '%s'.\n", input, output);
+        } else {
+            printf("Erro ao compactar '%s'.\n", input);
         }
+        return 0;
     }
-    
-    
-    
-    int totalBits = calculateEncodedSize(text, strlen((const char*)text),table);
-    printf("Total de bits necessários: %d\n", totalBits);
-    printf("Tamanho estimado: %d bytes\n", (totalBits+7)/8);
-    
-    int count=0;
-    for(int i=0;i<256;i++){
-        if(f[i]>0) count++;
-    }
-    
-    HuffmanNode** nodes = malloc(count * sizeof(HuffmanNode*));
-    
-    int idx=0;
-    for(int i=0;i<256;i++){
-        if(f[i]>0){
-            
-            HuffmanNode* n = createNode(i,f[i],NULL,NULL);
-    printf("Node criado: byte=%c freq=%d\n", n->byte, n->freq);
-           nodes[idx++] = n;
-            
-            // printTree(root, 0);
-            printf("byte: %3d (%c) aparece %d vezes\n", i,
-            (i >= 32 && i<=126) ? i : '.' ,f[i]);
+
+    if(strcmp(mode, "decompress")==0) {
+        if(decompressFromFile(input, output)) {
+            printf("Arquivo '%s' descompactado para '%s'.\n", input, output);
+        } else {
+            printf("Erro ao descompactar '%s'.\n", input);
         }
+        return 0;
     }
-    
-    int m = findMinNode(nodes,count);
-    printf("Menor freq = %d (byte = %c)\n",
-       nodes[m]->freq,
-       nodes[m]->byte);
-    */
-    
-    free(f);
-    // free(nodes);
-    return 0;
+
+    printf("Modo inválido: %s\n", mode);
+    printf("Use 'compress' ou 'decompress'.\n");
+    return 1;
 }
-
-

@@ -175,4 +175,78 @@ unsigned char* decode(const unsigned char* data, int bitCount, HuffmanNode* root
     return out;
 }
 
+int compressToFile(const char* inputPath, const char* outputAdrPath){
+    FILE* in = fopen(inputPath, "rb");
+    if (!in) return 0;
+
+    fseek(in, 0, SEEK_END);
+    long size = ftell(in);
+    fseek(in, 0, SEEK_SET);
+
+    unsigned char* buffer = malloc(size);
+    fread(buffer, 1, size, in);
+    fclose(in);
+
+    int* freq = countFrequency(buffer, size);
+
+    HuffmanNode* root = buildHuffmanTree(freq);
+	
+    HuffmanCode table[256];
+    buildCodeTable(root, table);
+
+    int encodedSizeBytes;
+    unsigned char* encoded = encode(buffer, size, table, &encodedSizeBytes);
+
+    FILE* out = fopen(outputAdrPath, "wb");
+    if (!out) return 0;
+
+    fwrite(freq, sizeof(int), 256, out);
+    fwrite(&size, sizeof(int), 1, out);
+    fwrite(encoded, 1, encodedSizeBytes, out);
+	
+	
+    fclose(out);
+
+    free(buffer);
+    free(freq);
+    free(encoded);
+
+    return 1;
+}
+
+int decompressFromFile(const char* adrPath, const char* outputPath){
+    FILE* f = fopen(adrPath, "rb");
+    if (!f) return 0;
+
+    int freq[256];
+    fread(freq, sizeof(int), 256, f);
+	
+    HuffmanNode* root = buildHuffmanTree(freq);
+
+    int originalSize;
+    fread(&originalSize, sizeof(int), 1, f);
+
+    fseek(f, 0, SEEK_END);
+    long endPos = ftell(f);
+    long dataSize = endPos - (256 * sizeof(int) + sizeof(int));
+    fseek(f, (256 * sizeof(int) + sizeof(int)), SEEK_SET);
+
+    unsigned char* data = malloc(dataSize);
+    fread(data, 1, dataSize, f);
+    fclose(f);
+
+    int totalBits = dataSize * 8;
+
+    unsigned char* decoded = decode(data, totalBits, root, originalSize);
+	
+    FILE* out = fopen(outputPath, "wb");
+    fwrite(decoded, 1, originalSize, out);
+    fclose(out);
+
+    free(data);
+    free(decoded);
+
+    return 1;
+}
+
 
