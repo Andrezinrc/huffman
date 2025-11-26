@@ -44,10 +44,19 @@ def index():
                 result = "Somente arquivos .adr podem ser descomprimidos."
                 return render_template("index.html", result=result)
 
-            output_path = input_path.replace(".adr", "_dec.bin")
-            ok = huff.decompressFromFile(input_path.encode(), output_path.encode())
+            output_prefix = input_path.replace(".adr", "")
+            ok = huff.decompressFromFile(input_path.encode(), output_prefix.encode())
+
             if ok:
-                return send_file(output_path, as_attachment=True)
+                folder = os.path.dirname(output_prefix)
+                base = os.path.basename(output_prefix)
+
+                for f in os.listdir(folder):
+                    if f.startswith(base):
+                        fullpath = os.path.join(folder, f)
+                        return send_file(fullpath, as_attachment=True)
+
+                result = "Erro ao localizar arquivo descompactado."
             else:
                 result = "Erro ao descomprimir o arquivo."
 

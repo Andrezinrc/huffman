@@ -23,10 +23,7 @@ h2 {
     text-align: center;
     font-size: 2.2rem;
     margin-bottom: 2rem;
-    background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: white;
 }
 
 form {
@@ -94,19 +91,6 @@ button {
 .btn-decompress {
     background: linear-gradient(135deg, #22c55e 0%, #4ade80 100%);
     color: white;
-}
-
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.btn-compress:hover {
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-}
-
-.btn-decompress:hover {
-    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
 }
 
 .result {

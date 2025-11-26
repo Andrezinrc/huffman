@@ -190,7 +190,6 @@ int compressToFile(const char* inputPath, const char* outputAdrPath){
     int* freq = countFrequency(buffer, size);
 
     HuffmanNode* root = buildHuffmanTree(freq);
-	
     HuffmanCode table[256];
     buildCodeTable(root, table);
 
@@ -202,9 +201,15 @@ int compressToFile(const char* inputPath, const char* outputAdrPath){
 
     fwrite(freq, sizeof(int), 256, out);
     fwrite(&size, sizeof(int), 1, out);
+
+    const char* dot = strrchr(inputPath, '.');
+    const char* ext = (dot ? dot : "");
+    int extLen = strlen(ext);
+
+    fwrite(&extLen, sizeof(int), 1, out);
+    fwrite(ext, 1, extLen, out);
     fwrite(encoded, 1, encodedSizeBytes, out);
-	
-	
+
     fclose(out);
 
     free(buffer);
@@ -214,32 +219,41 @@ int compressToFile(const char* inputPath, const char* outputAdrPath){
     return 1;
 }
 
-int decompressFromFile(const char* adrPath, const char* outputPath){
+int decompressFromFile(const char* adrPath, const char* outputBase){
     FILE* f = fopen(adrPath, "rb");
     if (!f) return 0;
 
     int freq[256];
     fread(freq, sizeof(int), 256, f);
-	
+
     HuffmanNode* root = buildHuffmanTree(freq);
 
     int originalSize;
     fread(&originalSize, sizeof(int), 1, f);
 
+    int extLen;
+    fread(&extLen, sizeof(int), 1, f);
+
+    char ext[32];
+    fread(ext, 1, extLen, f);
+    ext[extLen] = '\0';
+
     fseek(f, 0, SEEK_END);
     long endPos = ftell(f);
-    long dataSize = endPos - (256 * sizeof(int) + sizeof(int));
-    fseek(f, (256 * sizeof(int) + sizeof(int)), SEEK_SET);
+    long dataSize = endPos - (256*sizeof(int) + sizeof(int) + sizeof(int) + extLen);
+    fseek(f, (256*sizeof(int) + sizeof(int) + sizeof(int) + extLen), SEEK_SET);
 
     unsigned char* data = malloc(dataSize);
     fread(data, 1, dataSize, f);
     fclose(f);
 
     int totalBits = dataSize * 8;
-
     unsigned char* decoded = decode(data, totalBits, root, originalSize);
-	
-    FILE* out = fopen(outputPath, "wb");
+
+    char finalPath[512];
+    snprintf(finalPath, sizeof(finalPath), "%s%s", outputBase, ext);
+
+    FILE* out = fopen(finalPath, "wb");
     fwrite(decoded, 1, originalSize, out);
     fclose(out);
 
