@@ -1,80 +1,63 @@
 #ifndef HUFFMAN_H
 #define HUFFMAN_H
 
+/*
+ * Implementação simples de compressão Huffman.
+ *
+ * Fornece:
+ *  - contagem de frequência
+ *  - construção da árvore
+ *  - geração da tabela de códigos
+ *  - codificação/decodificação de buffers
+ *  - compressão/descompressão de arquivos .adr
+ *
+ * .adr armazenam:
+ *  - tabela de frequências
+ *  - tamanho original
+ *  - bitstream comprimido
+ */
+
 #include <stddef.h>
 
 typedef struct HuffmanNode {
-    unsigned char byte;      // valor do byte (0–255)
-    int freq;                // frequência do byte
-    struct HuffmanNode* left;
-    struct HuffmanNode* right;
+    unsigned char byte;
+    int freq;
+    struct HuffmanNode *left, *right;
 } HuffmanNode;
 
 typedef struct {
-    unsigned char bits[256];  // sequência de bits, armazenada como 0 ou 1
-    int length;               // quantidade de bits válidos
+    unsigned char bits[256];
+    int length;
 } HuffmanCode;
 
-/*
- * Conta a frequência de cada byte.
- */
-int* countFrequency(const unsigned char* text, size_t length);
+int* countFrequency(const unsigned char *text, size_t length);
 
-/*
- * Cria um nó da árvore de Huffman (folha ou interno).
- */
 HuffmanNode* createNode(unsigned char byte, int freq,
-                        HuffmanNode* left, HuffmanNode* right);
+                        HuffmanNode *left, HuffmanNode *right);
 
-/*
- * Encontra o índice do nó com menor frequência
- */
-int findMinNode(HuffmanNode** nodes, int count);
+int findMinNode(HuffmanNode **nodes, int count);
+HuffmanNode* buildHuffmanTree(int *frequencies);
 
-/*
- * Constrói a árvore de Huffman e retorna a raiz
- */
-HuffmanNode* buildHuffmanTree(int* frequencies);
+void printTree(HuffmanNode *root, int depth);
 
-/*
- * Imprime a árvore de Huffman de forma recursiva
- * para visualização. depth indica a profundidade atual.
- */
-void printTree(HuffmanNode* root, int depth);
+void generateCodes(HuffmanNode *n, HuffmanCode *table,
+                   unsigned char *path, int depth);
 
-/*
- * Gera os códigos de Huffman percorrendo a árvore.
- */
-void generateCodes(HuffmanNode* n, HuffmanCode* table, unsigned char* path, int depth);
+void buildCodeTable(HuffmanNode *root, HuffmanCode *table);
 
-/*
- * Preenche a tabela de códigos de Huffman a partir da raiz.
- */
-void buildCodeTable(HuffmanNode* root, HuffmanCode* table);
+int calculateEncodedSize(const unsigned char *text, int length,
+                         HuffmanCode *table);
 
-/*
- * Calcula quantos bits serão necessários para codificar o texto.
- */
-int calculateEncodedSize(const unsigned char* text, int length, HuffmanCode* table);
+unsigned char* encode(const unsigned char *text, size_t length,
+                      HuffmanCode *table, int *outSizeBytes);
 
-/*
- * Codifica um texto usando a tabela de Huffman.
- * Recebe o texto original, seu tamanho e a tabela de códigos.
- * Retorna um buffer com os bits comprimidos e preenche outSizeBytes
- * com o tamanho em bytes do buffer gerado.
- */
-unsigned char* encode(const unsigned char* text, size_t length,
-                      HuffmanCode* table, int* outSizeBytes);
 
-/**
- * Reconstrói o texto original percorrendo os bits comprimidos.
- */
-unsigned char* decode(const unsigned char* data, int bitCount, HuffmanNode* root, int originalSize);
+unsigned char* decode(const unsigned char *data, int bitCount,
+                      HuffmanNode *root, int originalSize);
 
-// Compacta um arquivo comum e salva no formato .adr
-int compressToFile(const char* inputPath, const char* outputAdrPath);
 
-// Descompacta um arquivo .adr e recria o arquivo original
-int decompressFromFile(const char* adrPath, const char* outputPath);
+
+int compressToFile(const char *inputPath, const char *outputAdrPath);
+int decompressFromFile(const char *adrPath, const char *outputPath);
 
 #endif
